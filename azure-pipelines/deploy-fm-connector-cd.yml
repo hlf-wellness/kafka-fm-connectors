@@ -1,0 +1,24 @@
+parameters:
+- name: connectorFile
+  default: path/to/connector.json
+
+name: $(date:yyyyMMdd)$(rev:.r) - $(build.sourceBranch) - ${{ replace(replace(parameters.connectorFile,'/','_'),'\','_') }}
+
+trigger: none
+
+resources:
+  repositories:
+    - repository: kafka-sharedTemplates
+      name: hn-gtsdevops/kafka-sharedTemplates
+      endpoint: hn-gtsdevops
+      type: github
+
+    - repository: common-sharedTemplates
+      name: hn-gtsdevops/common-sharedTemplates
+      endpoint: hn-gtsdevops
+      type: github
+
+extends: 
+  template: extension/kafka/deploy-kafka-connector.yml@kafka-sharedTemplates
+  parameters:
+    connectorJsonFile: ${{ parameters.connectorFile }}

@@ -1,0 +1,30 @@
+parameters:
+  - name: connectorFile
+    default: path/to/connector.json
+  - name: action
+    default: resume
+    values:
+      - resume
+      - pause
+
+name: $(date:yyyyMMdd)$(rev:.r) - $(build.sourceBranch) - ${{ replace(replace(parameters.connectorFile,'/','_'),'\','_') }}
+
+trigger: none
+
+resources:
+  repositories:
+    - repository: kafka-sharedTemplates
+      name: hn-gtsdevops/kafka-sharedTemplates
+      endpoint: hn-gtsdevops
+      type: github
+
+    - repository: common-sharedTemplates
+      name: hn-gtsdevops/common-sharedTemplates
+      endpoint: hn-gtsdevops
+      type: github
+
+extends: 
+  template: extension/kafka/pause-kafka-fm-connector.yml@kafka-sharedTemplates
+  parameters:
+    jsonFile: ${{ parameters.connectorFile }}
+    action: ${{ parameters.action }}
